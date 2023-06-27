@@ -2,11 +2,10 @@ import java.util.StringJoiner;
 
 public class MyHashMap<K, T> {
 
-    private class Node {
+    private static class Node<K, T> {
         K key;
         T value;
-        Node prev;
-        Node next;
+        Node<K, T> next;
 
         public Node(K key, T value) {
             this.key = key;
@@ -14,27 +13,40 @@ public class MyHashMap<K, T> {
         }
     }
 
+    public static final int CAPACITY = 10;
+    private Node<K, T>[] data;
     private int size;
-    private Node first;
-    private Node last;
 
-    public void put(Object key, Object value) {
-        Node newNode = new Node((K) key, (T) value);
+    public MyHashMap() {
+        this.data = new Node[CAPACITY];
+    }
 
-        if (size == 0) {
-            first = last = newNode;
+    private int getHash(K key) {
+        return Math.abs(key.hashCode()) % CAPACITY;
+    }
+
+    public void put(K key, T value) {
+        if (key == null)
+            return;
+
+        Node<K, T> newNode = new Node<>(key, value);
+        int index = getHash(key);
+
+        if (data[index] == null) {
+            data[index] = newNode;
         } else {
-            Node node = first;
-            for (int i = 0; i < size; i++) {
-                if(node.key.equals(newNode.key)){
+            Node<K, T> currentNode = data[index];
+            Node<K, T> previosNode = null;
+
+            while (currentNode != null) {
+                if (currentNode.key.equals(key)) {
+                    currentNode.value = value;
                     return;
                 }
-                node = node.next;
+                previosNode = currentNode;
+                currentNode = currentNode.next;
             }
-
-            last.next = newNode;
-            newNode.prev = last;
-            last = newNode;
+            previosNode.next = newNode;
         }
         size++;
     }
@@ -44,70 +56,74 @@ public class MyHashMap<K, T> {
     }
 
     public void clear() {
-        first = null;
-        size = 0;
+        this.data = new Node[CAPACITY];
+        this.size = 0;
     }
 
     public boolean isEmpty() {
         return size == 0;
     }
 
-    public Object get(Object key) {
-        Node node = first;
-        for (int i = 0; i < size; i++) {
-            if(node.key.equals(key)){
-                return node.value;
+    public T get(K key) {
+        if (key == null)
+            return null;
+
+        int index = getHash(key);
+
+        if (data[index] != null) {
+            Node<K, T> currentNode = data[index];
+
+            while (currentNode != null) {
+                if (currentNode.key.equals(key)) {
+                    return currentNode.value;
+                }
+                currentNode = currentNode.next;
             }
-            node = node.next;
         }
         return null;
     }
 
-    public Object remove(Object key) {
-        boolean isFound = false;
-
-        Node node = first;
-        for (int i = 0; i < size; i++) {
-            if(node.key.equals(key)){
-                isFound = true;
-                break;
-            }
-            node = node.next;
-        }
-
-        if(!isFound){
+    public T remove(K key) {
+        if (key == null)
             return null;
-        }
 
-        T value = node.value;
-        if (node != last) {
-            node.next.prev = node.prev;
-        } else {
-            node.prev.next = null;
-            last = node.prev;
-        }
+        int index = getHash(key);
 
-        if (node != first) {
-            node.prev.next = node.next;
-        } else {
-            node.next.prev = null;
-            first = node.next;
-        }
+        if (data[index] != null) {
+            Node<K, T> currentNode = data[index];
+            Node<K, T> previosNode = null;
 
-        size--;
-        return value;
+            while (currentNode != null) {
+                if (currentNode.key.equals(key)) {
+                    if (previosNode == null) {
+                        data[index] = null;
+                    } else {
+                        previosNode.next = currentNode.next;
+                    }
+                    size--;
+                    return currentNode.value;
+                }
+                previosNode = currentNode;
+                currentNode = currentNode.next;
+            }
+        }
+        return null;
     }
 
     @Override
     public String toString() {
-        StringJoiner stringJoiner = new StringJoiner(",", "[", "]");
+        StringJoiner stringJoiner = new StringJoiner(", ", "{", "}");
 
-        Node node = first;
-        for (int i = 0; i < size; i++) {
-            stringJoiner.add("{" + node.key.toString() + "=" + node.value.toString() + "}");
-            node = node.next;
+        for (int i = 0; i < CAPACITY; i++) {
+            if (data[i] != null) {
+                Node<K, T> node = data[i];
+                do {
+                    stringJoiner.add(node.key.toString() + "=" + node.value.toString());
+                    node = node.next;
+                } while (node != null);
+            }
         }
-
         return stringJoiner.toString();
     }
 }
+

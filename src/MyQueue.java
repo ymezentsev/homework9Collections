@@ -1,6 +1,6 @@
 import java.util.StringJoiner;
 
-public class MyQueue <T> {
+public class MyQueue<T> {
     public static final int SIZE = 10;
     private Object[] data;
     private int size;
@@ -9,7 +9,7 @@ public class MyQueue <T> {
         this.data = new Object[SIZE];
     }
 
-    public void add(Object value) {
+    public void add(T value) {
         if (size == data.length) {
             resizeArray();
         }
@@ -35,15 +35,15 @@ public class MyQueue <T> {
         return size == 0;
     }
 
-    public Object peek() {
-        return data[0];
+    public T peek() {
+        return (T) data[0];
     }
 
-    public Object poll() {
-        Object element = data[0];
+    public T poll() {
+        T element = (T) data[0];
 
         for (int i = 0; i < size; i++) {
-            data[i] = data[i+1];
+            data[i] = data[i + 1];
         }
         this.size--;
         return element;

@@ -1,6 +1,6 @@
 import java.util.StringJoiner;
 
-public class MyArrayList <T> {
+public class MyArrayList<T> {
     public static final int SIZE = 10;
     private Object[] data;
     private int index;
@@ -9,7 +9,7 @@ public class MyArrayList <T> {
         this.data = new Object[SIZE];
     }
 
-    public void add(Object value) {
+    public void add(T value) {
         if (index == data.length) {
             resizeArray();
         }
@@ -35,24 +35,28 @@ public class MyArrayList <T> {
         return index == 0;
     }
 
-    public Object remove(int index) {
-        if(index < 0 || index >= size()){
+    public T remove(int index) {
+        if (isIndexWrong(index)) {
             return null;
         }
-        Object element = data[index];
+        T element = (T) data[index];
 
         for (int i = index; i < size(); i++) {
-            data[i] = data[i+1];
+            data[i] = data[i + 1];
         }
         this.index--;
         return element;
     }
 
-    public Object get(int index) {
-        if(index < 0 || index >= size()){
+    private boolean isIndexWrong(int index) {
+        return index < 0 || index >= size();
+    }
+
+    public T get(int index) {
+        if (isIndexWrong(index)) {
             return null;
         }
-        return data[index];
+        return (T) data[index];
     }
 
     @Override

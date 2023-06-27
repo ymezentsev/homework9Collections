@@ -1,11 +1,11 @@
 import java.util.StringJoiner;
 
-public class MyLinkedList <T> {
+public class MyLinkedList<T> {
 
-    private class Node {
+    private static class Node<T> {
         T value;
-        Node prev;
-        Node next;
+        Node<T> prev;
+        Node<T> next;
 
         public Node(T value) {
             this.value = value;
@@ -13,11 +13,11 @@ public class MyLinkedList <T> {
     }
 
     private int size;
-    private Node first;
-    private Node last;
+    private Node<T> first;
+    private Node<T> last;
 
-    public void add(Object value) {
-        Node newNode = new Node((T) value);
+    public void add(T value) {
+        Node<T> newNode = new Node<>((T) value);
 
         if (size == 0) {
             first = last = newNode;
@@ -43,36 +43,40 @@ public class MyLinkedList <T> {
     }
 
     public T get(int index) {
-        if (index < 0 || index >= size()) {
+        if (isIndexWrong(index)) {
             return null;
         }
 
-        Node node = first;
+        Node<T> node = first;
         for (int i = 0; i < index; i++) {
             node = node.next;
         }
         return node.value;
     }
 
+    private boolean isIndexWrong(int index) {
+        return index < 0 || index >= size();
+    }
+
     public T remove(int index) {
-        if(index < 0 || index >= size()){
+        if (isIndexWrong(index)) {
             return null;
         }
 
-        Node node = first;
+        Node<T> node = first;
         for (int i = 0; i < index; i++) {
             node = node.next;
         }
 
         T value = node.value;
-        if(node != last){
+        if (node != last) {
             node.next.prev = node.prev;
         } else {
             node.prev.next = null;
             last = node.prev;
         }
 
-        if(node != first){
+        if (node != first) {
             node.prev.next = node.next;
         } else {
             node.next.prev = null;
@@ -87,7 +91,7 @@ public class MyLinkedList <T> {
     public String toString() {
         StringJoiner stringJoiner = new StringJoiner(",", "[", "]");
 
-        Node node = first;
+        Node<T> node = first;
         for (int i = 0; i < size; i++) {
             stringJoiner.add(node.value.toString());
             node = node.next;

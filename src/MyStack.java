@@ -1,6 +1,6 @@
 import java.util.StringJoiner;
 
-public class MyStack <T> {
+public class MyStack<T> {
     public static final int SIZE = 10;
     private Object[] data;
     private int size;
@@ -9,7 +9,7 @@ public class MyStack <T> {
         this.data = new Object[SIZE];
     }
 
-    public void push(Object value) {
+    public void push(T value) {
         if (size == data.length) {
             resizeArray();
         }
@@ -35,25 +35,25 @@ public class MyStack <T> {
         return size == 0;
     }
 
-    public Object peek() {
-        return data[size-1];
+    public T peek() {
+        return (T) data[size - 1];
     }
 
-    public Object pop() {
-        Object element = data[size-1];
-        data[size-1] = null;
+    public T pop() {
+        T element = (T) data[size - 1];
+        data[size - 1] = null;
         this.size--;
         return element;
     }
 
-    public Object remove(int index) {
-        if(index < 0 || index >= size()){
+    public T remove(int index) {
+        if (index < 0 || index >= size()) {
             return null;
         }
-        Object element = data[index];
+        T element = (T) data[index];
 
         for (int i = index; i < size; i++) {
-            data[i] = data[i+1];
+            data[i] = data[i + 1];
         }
         this.size--;
         return element;
